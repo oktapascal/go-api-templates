@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"go-rental/middlewares"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -20,24 +22,31 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 
 	viper.SetConfigType("dotenv")
 	viper.AddConfigPath(".")
 	viper.SetConfigName(".env")
 
 	err := viper.ReadInConfig()
-
 	if err != nil {
 		fmt.Println("Error reading config file:", err)
 		return
 	}
 
+	router.Use(middlewares.AuthorizationCheck)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
+		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
+		if err != nil {
+			log.Fatal(err)
+		}
 	})
 
 	banner, _ := ascii.RenderOpts("RW"+"v"+viper.GetString("APP_VERSION"), optionAscii)
 	fmt.Print(banner)
 
-	http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
+	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
