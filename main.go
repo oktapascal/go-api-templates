@@ -39,7 +39,7 @@ func main() {
 		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
 		if err != nil {
 			http.Error(w, http.StatusText(500), 500)
-			log.Fatal(err)
+			log.Panic(err)
 		}
 	})
 
@@ -47,7 +47,7 @@ func main() {
 		token, err := libs.GenerateToken("test@email.com")
 		if err != nil {
 			http.Error(w, http.StatusText(500), 500)
-			log.Fatal(err)
+			log.Panic(err)
 			return
 		}
 
@@ -55,7 +55,7 @@ func main() {
 
 		if err != nil {
 			http.Error(w, http.StatusText(500), 500)
-			log.Fatal(err)
+			log.Panic(err)
 			return
 		}
 	})
