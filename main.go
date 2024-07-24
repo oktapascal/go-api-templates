@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-rental/libs"
+	"go-rental/middlewares"
 	"log"
 	"net/http"
 
@@ -34,7 +35,7 @@ func main() {
 		return
 	}
 
-	//router.Use(middlewares.AuthorizationCheck)
+	router.Use(middlewares.AuthorizationCheck)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
 		if err != nil {
