@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go-rental/middlewares"
+	"go-rental/libs"
 	"log"
 	"net/http"
 
@@ -34,11 +34,29 @@ func main() {
 		return
 	}
 
-	router.Use(middlewares.AuthorizationCheck)
+	//router.Use(middlewares.AuthorizationCheck)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
 		if err != nil {
+			http.Error(w, http.StatusText(500), 500)
 			log.Fatal(err)
+		}
+	})
+
+	router.Get("/generate-token", func(w http.ResponseWriter, r *http.Request) {
+		token, err := libs.GenerateToken("test@email.com")
+		if err != nil {
+			http.Error(w, http.StatusText(500), 500)
+			log.Fatal(err)
+			return
+		}
+
+		_, err = w.Write([]byte(token))
+
+		if err != nil {
+			http.Error(w, http.StatusText(500), 500)
+			log.Fatal(err)
+			return
 		}
 	})
 
