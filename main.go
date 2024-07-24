@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"go-rental/libs"
-	"go-rental/middlewares"
+	"github.com/go-playground/validator/v10"
+	"go-rental/controllers"
+	"go-rental/services"
 	"log"
 	"net/http"
 
@@ -20,6 +21,7 @@ func main() {
 	optionAscii := figlet4go.NewRenderOptions()
 	optionAscii.FontName = "standard"
 
+	validate := validator.New()
 	router := chi.NewRouter()
 
 	router.Use(middleware.Logger)
@@ -35,8 +37,10 @@ func main() {
 		return
 	}
 
-	router.Use(middlewares.AuthorizationCheckMiddleware)
-	router.Use(middlewares.VerifyTokenMiddleware)
+	userService := services.NewUserService(validate)
+	userController := controllers.NewUserController(userService)
+	//router.Use(middlewares.AuthorizationCheckMiddleware)
+	//router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
 		if err != nil {
@@ -45,22 +49,7 @@ func main() {
 		}
 	})
 
-	router.Get("/generate-token", func(w http.ResponseWriter, r *http.Request) {
-		token, err := libs.GenerateToken("test@email.com")
-		if err != nil {
-			http.Error(w, http.StatusText(500), 500)
-			log.Panic(err)
-			return
-		}
-
-		_, err = w.Write([]byte(token))
-
-		if err != nil {
-			http.Error(w, http.StatusText(500), 500)
-			log.Panic(err)
-			return
-		}
-	})
+	router.Post("/user", userController.Store)
 
 	banner, _ := ascii.RenderOpts("RW"+"v"+viper.GetString("APP_VERSION"), optionAscii)
 	fmt.Print(banner)
