@@ -8,8 +8,8 @@ import (
 )
 
 type JwtClaims struct {
-	jwt.RegisteredClaims
 	Email string `json:"email"`
+	jwt.RegisteredClaims
 }
 
 var SECRET_KEY = []byte(viper.GetString("JWT_SIGNATURE_KEY"))
@@ -26,11 +26,11 @@ var SECRET_KEY = []byte(viper.GetString("JWT_SIGNATURE_KEY"))
 // If there is an error during token signing, the function returns an empty string and the corresponding error.
 func GenerateToken(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JwtClaims{
+		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    viper.GetString("APP_NAME"),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},
-		Email: email,
 	})
 
 	tokenString, err := token.SignedString(SECRET_KEY)
@@ -51,7 +51,7 @@ func GenerateToken(email string) (string, error) {
 //
 // If the token is not valid (expired, malformed, etc.), the function returns an error with the message "invalid token".
 func VerifyToken(token string) error {
-	parse, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+	parse, err := jwt.ParseWithClaims(token, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return SECRET_KEY, nil
 	})
 	if err != nil {

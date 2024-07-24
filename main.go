@@ -35,7 +35,8 @@ func main() {
 		return
 	}
 
-	router.Use(middlewares.AuthorizationCheck)
+	router.Use(middlewares.AuthorizationCheckMiddleware)
+	router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
 		if err != nil {
