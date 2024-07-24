@@ -8,6 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/probandula/figlet4go v0.0.0-20190224160619-d6cef5b186ea
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
 )
 

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"go-rental/controllers"
+	"go-rental/libs"
+	"go-rental/middlewares"
 	"go-rental/services"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -24,7 +25,7 @@ func main() {
 	validate := validator.New()
 	router := chi.NewRouter()
 
-	router.Use(middleware.Logger)
+	router.Use(middlewares.LoggerMiddleware)
 	router.Use(middleware.Recoverer)
 
 	viper.SetConfigType("dotenv")
@@ -33,29 +34,25 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println("Error reading config file:", err)
+		libs.CreateLogEntry(nil).Fatalln("Error reading config file:", err.Error())
 		return
 	}
 
+	welcomeController := controllers.NewWelcomeController()
 	userService := services.NewUserService(validate)
 	userController := controllers.NewUserController(userService)
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
-		if err != nil {
-			http.Error(w, http.StatusText(500), 500)
-			log.Panic(err)
-		}
-	})
-
+	router.Get("/", welcomeController.Welcome)
 	router.Post("/user", userController.Store)
 
 	banner, _ := ascii.RenderOpts("RW"+"v"+viper.GetString("APP_VERSION"), optionAscii)
 	fmt.Print(banner)
 
+	libs.CreateLogEntry(nil).Warning("Application Started")
+
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
-		log.Fatal(err)
+		libs.CreateLogEntry(nil).Panic("Failed to start application")
 	}
 }
