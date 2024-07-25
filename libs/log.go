@@ -3,32 +3,61 @@ package libs
 import (
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 )
 
-// CreateLogEntry creates a new logrus Entry with fields based on the provided HTTP request.
-// If the request is nil, it will only include the current timestamp in the log entry.
-// Otherwise, it will include the timestamp, HTTP method, request URI, and client IP address.
-//
-// Parameters:
-// - r: A pointer to an http.Request object representing the incoming HTTP request.
-//
-// Returns:
-// - A pointer to a logrus.Entry object containing the log entry fields.
-func CreateLogEntry(r *http.Request) *logrus.Entry {
-	logger := logrus.New()
-	logger.SetFormatter(&logrus.TextFormatter{ForceColors: true})
+var loggerConsole = logrus.New()
+var loggerFile = logrus.New()
+
+func CreateLoggerConsole(r *http.Request) *logrus.Entry {
+	loggerConsole.SetOutput(os.Stdout)
+	loggerConsole.SetFormatter(&logrus.TextFormatter{ForceColors: true})
+	loggerConsole.SetLevel(logrus.TraceLevel)
 
 	if r == nil {
-		return logger.WithFields(logrus.Fields{
+		return loggerConsole.WithFields(logrus.Fields{
 			"at": time.Now().Format("2024-07-25 04:05:10"),
 		})
 	}
 
-	return logger.WithFields(logrus.Fields{
+	return loggerConsole.WithFields(logrus.Fields{
 		"at":     time.Now().Format("2024-07-25 04:05:10"),
 		"method": r.Method,
 		"uri":    r.RequestURI,
 		"ip":     r.RemoteAddr,
 	})
+}
+
+func createLogsDir() error {
+	logsDir := "logs"
+	if _, err := os.Stat(logsDir); os.IsNotExist(err) {
+		return os.Mkdir(logsDir, 0755)
+	}
+	return nil
+}
+
+func getLogFileName() string {
+	return filepath.Join("logs", time.Now().Format("2006-01-02")+".log")
+}
+
+func CreateLoggerFile() *logrus.Logger {
+	err := createLogsDir()
+	if err != nil {
+		CreateLoggerConsole(nil).Fatal("Failed to create logs directory")
+	}
+
+	logFileName := getLogFileName()
+
+	file, errFile := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if errFile != nil {
+		CreateLoggerConsole(nil).Fatal("Failed to open log file")
+	}
+
+	loggerFile.SetFormatter(&logrus.JSONFormatter{})
+	loggerFile.SetLevel(logrus.WarnLevel)
+	loggerFile.SetOutput(file)
+
+	return loggerFile
 }

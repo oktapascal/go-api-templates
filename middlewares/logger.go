@@ -15,7 +15,7 @@ import (
 // - An http.Handler that logs incoming requests before passing them to the next handler.
 func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		libs.CreateLogEntry(r).Info("Incoming Request")
+		libs.CreateLoggerConsole(r).Info("Incoming Request")
 		next.ServeHTTP(w, r)
 	})
 }

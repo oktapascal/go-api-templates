@@ -45,6 +45,6 @@ go.sum
 /out/
 /.vscode/
 /.idea/
-
+/logs/
 # Project specific
 .DS_Store

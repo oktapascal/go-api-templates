@@ -17,7 +17,7 @@ import (
 //
 // Return:
 // This function does not return any value.
-func InternalServerHandler(writer http.ResponseWriter, error interface{}) {
+func InternalServerHandler(writer http.ResponseWriter, error error) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusInternalServerError)
 
@@ -29,9 +29,9 @@ func InternalServerHandler(writer http.ResponseWriter, error interface{}) {
 
 	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
-
 	if err != nil {
-		libs.CreateLogEntry(nil).Panic(err)
-		panic(err)
+		libs.CreateLoggerFile().Panic(err)
 	}
+
+	libs.CreateLoggerFile().Panic(error)
 }

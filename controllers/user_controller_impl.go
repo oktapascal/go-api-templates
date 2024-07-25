@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"go-rental/exceptions"
-	"go-rental/libs"
 	"go-rental/requests"
 	"go-rental/responses"
 	"go-rental/services"
@@ -26,9 +25,7 @@ func (controller *UserControllerImpl) Store(writer http.ResponseWriter, request 
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&userCreateRequest)
 	if err != nil {
-		libs.CreateLogEntry(nil).Panic(err)
 		exceptions.InternalServerHandler(writer, err)
-		panic(err)
 	}
 
 	err = controller.Validate.Struct(userCreateRequest)
@@ -48,9 +45,7 @@ func (controller *UserControllerImpl) Store(writer http.ResponseWriter, request 
 
 		err = encoder.Encode(responseError)
 		if err != nil {
-			libs.CreateLogEntry(nil).Panic(err)
 			exceptions.InternalServerHandler(writer, err)
-			panic(err)
 		}
 
 		return

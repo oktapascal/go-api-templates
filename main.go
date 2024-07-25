@@ -7,7 +7,6 @@ import (
 	"go-rental/libs"
 	"go-rental/middlewares"
 	"go-rental/services"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -45,8 +44,7 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		libs.CreateLogEntry(nil).Fatalln("Error reading config file:", err.Error())
-		log.Fatal("Error reading config file:", err)
+		libs.CreateLoggerFile().Fatal(err)
 		return
 	}
 
@@ -61,11 +59,9 @@ func main() {
 	banner, _ := ascii.RenderOpts("RW"+"v"+viper.GetString("APP_VERSION"), optionAscii)
 	fmt.Print(banner)
 
-	libs.CreateLogEntry(nil).Warning("Application Started")
-
+	libs.CreateLoggerConsole(nil).Info("Application Started")
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
-		libs.CreateLogEntry(nil).Fatalln("Failed to start application")
-		log.Fatal("Error reading config file:", err)
+		libs.CreateLoggerFile().Fatal(err)
 	}
 }
