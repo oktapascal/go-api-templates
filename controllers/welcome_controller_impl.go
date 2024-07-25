@@ -18,5 +18,6 @@ func (controller WelcomeControllerImpl) Welcome(writer http.ResponseWriter, requ
 	if err != nil {
 		http.Error(writer, http.StatusText(500), 500)
 		libs.CreateLogEntry(request).Error(err)
+		panic(err)
 	}
 }

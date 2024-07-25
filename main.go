@@ -7,7 +7,10 @@ import (
 	"go-rental/libs"
 	"go-rental/middlewares"
 	"go-rental/services"
+	"log"
 	"net/http"
+	"reflect"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -23,6 +26,14 @@ func main() {
 	optionAscii.FontName = "standard"
 
 	validate := validator.New()
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
 	router := chi.NewRouter()
 
 	router.Use(middlewares.LoggerMiddleware)
@@ -35,12 +46,13 @@ func main() {
 	err := viper.ReadInConfig()
 	if err != nil {
 		libs.CreateLogEntry(nil).Fatalln("Error reading config file:", err.Error())
+		log.Fatal("Error reading config file:", err)
 		return
 	}
 
 	welcomeController := controllers.NewWelcomeController()
-	userService := services.NewUserService(validate)
-	userController := controllers.NewUserController(userService)
+	userService := services.NewUserService()
+	userController := controllers.NewUserController(validate, userService)
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", welcomeController.Welcome)
@@ -53,6 +65,7 @@ func main() {
 
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
-		libs.CreateLogEntry(nil).Panic("Failed to start application")
+		libs.CreateLogEntry(nil).Fatalln("Failed to start application")
+		log.Fatal("Error reading config file:", err)
 	}
 }
