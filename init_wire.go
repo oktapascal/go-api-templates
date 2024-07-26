@@ -17,12 +17,6 @@ func InitializeWelcomeController() controllers.WelcomeController {
 	return nil
 }
 
-//var UserSet = wire.NewSet(
-//	controllers.NewUserController,
-//	ProviderSet,
-//	services.NewUserService,
-//)
-
 func InitializeUserController() controllers.UserController {
 	wire.Build(controllers.NewUserController, ProviderSet, services.NewUserService)
 	return nil
