@@ -20,11 +20,6 @@ func InitializeWelcomeController() controllers.WelcomeController {
 	return welcomeController
 }
 
-func InitializeUserService() services.UserService {
-	userService := services.NewUserService()
-	return userService
-}
-
 func InitializeUserController() controllers.UserController {
 	validate := config.CreateValidator()
 	userService := services.NewUserService()
@@ -35,5 +30,3 @@ func InitializeUserController() controllers.UserController {
 // init_wire.go:
 
 var ProviderSet = wire.NewSet(config.CreateValidator)
-
-var UserSet = wire.NewSet(controllers.NewUserController, ProviderSet, services.NewUserService)

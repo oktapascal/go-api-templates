@@ -17,18 +17,13 @@ func InitializeWelcomeController() controllers.WelcomeController {
 	return nil
 }
 
-func InitializeUserService() services.UserService {
-	wire.Build(services.NewUserService)
-	return nil
-}
-
-var UserSet = wire.NewSet(
-	controllers.NewUserController,
-	ProviderSet,
-	services.NewUserService,
-)
+//var UserSet = wire.NewSet(
+//	controllers.NewUserController,
+//	ProviderSet,
+//	services.NewUserService,
+//)
 
 func InitializeUserController() controllers.UserController {
-	wire.Build(UserSet)
+	wire.Build(controllers.NewUserController, ProviderSet, services.NewUserService)
 	return nil
 }
