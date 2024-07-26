@@ -12,6 +12,11 @@ import (
 
 var ProviderSet = wire.NewSet(config.CreateValidator)
 
+func InitializeWelcomeController() controllers.WelcomeController {
+	wire.Build(controllers.NewWelcomeController)
+	return nil
+}
+
 func InitializeUserService() services.UserService {
 	wire.Build(services.NewUserService)
 	return nil

@@ -32,12 +32,12 @@ func CreateLoggerConsole(r *http.Request) *logrus.Entry {
 
 	if r == nil {
 		return loggerConsole.WithFields(logrus.Fields{
-			"at": time.Now().Format("2024-07-25 04:05:10"),
+			"at": time.Now().Format("2006-01-02 15:4:5"),
 		})
 	}
 
 	return loggerConsole.WithFields(logrus.Fields{
-		"at":     time.Now().Format("2024-07-25 04:05:10"),
+		"at":     time.Now().Format("2006-01-02 15:4:5"),
 		"method": r.Method,
 		"uri":    r.RequestURI,
 		"ip":     r.RemoteAddr,

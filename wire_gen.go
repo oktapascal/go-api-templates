@@ -15,6 +15,11 @@ import (
 
 // Injectors from init_wire.go:
 
+func InitializeWelcomeController() controllers.WelcomeController {
+	welcomeController := controllers.NewWelcomeController()
+	return welcomeController
+}
+
 func InitializeUserService() services.UserService {
 	userService := services.NewUserService()
 	return userService
