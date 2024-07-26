@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"go-rental/requests"
+	"go-rental/app/http/requests"
 	"go-rental/responses"
 )
 

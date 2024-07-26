@@ -1,4 +1,4 @@
-package libs
+package config
 
 import (
 	"github.com/sirupsen/logrus"
@@ -55,15 +55,15 @@ func CreateLoggerConsole(r *http.Request) *logrus.Entry {
 // Return:
 // error: An error if the directory creation fails, or nil if the directory already exists or was successfully created.
 func createLogsDir() error {
-	logsDir := "logs"
+	logsDir := "storage/logs"
 	if _, err := os.Stat(logsDir); os.IsNotExist(err) {
-		return os.Mkdir(logsDir, 0755)
+		return os.MkdirAll(logsDir, 0755)
 	}
 	return nil
 }
 
 func getLogFileName() string {
-	return filepath.Join("logs", time.Now().Format("2006-01-02")+".log")
+	return filepath.Join("storage/logs", time.Now().Format("2006-01-02")+".log")
 }
 
 // CreateLoggerFile initializes and configures a logrus Logger instance for logging to a file.

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"go-rental/libs"
+	"go-rental/config"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ import (
 // - An http.Handler that logs incoming requests before passing them to the next handler.
 func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		libs.CreateLoggerConsole(r).Info("Incoming Request")
+		config.CreateLoggerConsole(r).Info("Incoming Request")
 		next.ServeHTTP(w, r)
 	})
 }

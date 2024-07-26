@@ -3,10 +3,10 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"go-rental/exceptions"
-	"go-rental/requests"
+	exceptions2 "go-rental/app/exceptions"
+	"go-rental/app/http/requests"
+	"go-rental/app/services"
 	"go-rental/responses"
-	"go-rental/services"
 	"net/http"
 )
 
@@ -25,12 +25,12 @@ func (controller *UserControllerImpl) Store(writer http.ResponseWriter, request 
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&userCreateRequest)
 	if err != nil {
-		exceptions.InternalServerHandler(writer, err)
+		exceptions2.InternalServerHandler(writer, err)
 	}
 
 	err = controller.Validate.Struct(userCreateRequest)
 	if err != nil {
-		formatErrors := exceptions.BadRequestHandler(err)
+		formatErrors := exceptions2.BadRequestHandler(err)
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
@@ -45,7 +45,7 @@ func (controller *UserControllerImpl) Store(writer http.ResponseWriter, request 
 
 		err = encoder.Encode(responseError)
 		if err != nil {
-			exceptions.InternalServerHandler(writer, err)
+			exceptions2.InternalServerHandler(writer, err)
 		}
 
 		return

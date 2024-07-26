@@ -2,7 +2,7 @@ package exceptions
 
 import (
 	"encoding/json"
-	"go-rental/libs"
+	"go-rental/config"
 	"go-rental/responses"
 	"net/http"
 )
@@ -30,8 +30,8 @@ func InternalServerHandler(writer http.ResponseWriter, error error) {
 	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	if err != nil {
-		libs.CreateLoggerFile().Panic(err)
+		config.CreateLoggerFile().Panic(err)
 	}
 
-	libs.CreateLoggerFile().Panic(error)
+	config.CreateLoggerFile().Panic(error)
 }

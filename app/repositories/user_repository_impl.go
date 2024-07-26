@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"go-rental/entities"
+	"go-rental/app/models"
 	"log"
 )
 
@@ -15,7 +15,7 @@ func NewUserRepositoryImpl() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (repo *UserRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, user entities.User) entities.User {
+func (repo *UserRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, user models.User) models.User {
 	query := "insert into users(id_number, email, phone_number, address, first_name, last_name, provider, provider_id) values (?,?,?,?,?,?,?,?)"
 
 	_, err := tx.ExecContext(ctx, query, user.Email, user.PhoneNumber, user.Address, user.FirstName, user.LastName,
@@ -27,7 +27,7 @@ func (repo *UserRepositoryImpl) Create(ctx context.Context, tx *sql.Tx, user ent
 	return user
 }
 
-func (repo *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (entities.User, error) {
+func (repo *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (models.User, error) {
 	query := "select * from users where email = ?"
 
 	rows, err := tx.QueryContext(ctx, query, email)
@@ -42,7 +42,7 @@ func (repo *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, ema
 		}
 	}()
 
-	user := entities.User{}
+	user := models.User{}
 
 	if rows.Next() {
 		err := rows.Scan(&user.IdNumber, &user.Email, &user.PhoneNumber, &user.Address, &user.FirstName,

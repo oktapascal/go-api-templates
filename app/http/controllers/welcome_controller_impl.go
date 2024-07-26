@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/spf13/viper"
-	"go-rental/exceptions"
+	"go-rental/app/exceptions"
 	"net/http"
 )
 

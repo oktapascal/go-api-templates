@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"go-rental/controllers"
-	"go-rental/libs"
-	"go-rental/middlewares"
-	"go-rental/services"
+	controllers2 "go-rental/app/http/controllers"
+	"go-rental/app/http/middlewares"
+	"go-rental/app/services"
+	"go-rental/config"
 	"net/http"
 	"reflect"
 	"strings"
@@ -44,13 +44,13 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		libs.CreateLoggerFile().Fatal(err)
+		config.CreateLoggerFile().Fatal(err)
 		return
 	}
 
-	welcomeController := controllers.NewWelcomeController()
+	welcomeController := controllers2.NewWelcomeController()
 	userService := services.NewUserService()
-	userController := controllers.NewUserController(validate, userService)
+	userController := controllers2.NewUserController(validate, userService)
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", welcomeController.Welcome)
@@ -59,9 +59,9 @@ func main() {
 	banner, _ := ascii.RenderOpts("RW"+"v"+viper.GetString("APP_VERSION"), optionAscii)
 	fmt.Print(banner)
 
-	libs.CreateLoggerConsole(nil).Info("Application Started")
+	config.CreateLoggerConsole(nil).Info("Application Started")
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
-		libs.CreateLoggerFile().Fatal(err)
+		config.CreateLoggerFile().Fatal(err)
 	}
 }
