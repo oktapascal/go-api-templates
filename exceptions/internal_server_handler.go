@@ -3,11 +3,11 @@ package exceptions
 import (
 	"encoding/json"
 	"go-rental/config"
-	"go-rental/responses"
+	"go-rental/response"
 	"net/http"
 )
 
-// InternalServerHandler is a function that handles HTTP 500 Internal Server Error responses.
+// InternalServerHandler is a function that handles HTTP 500 Internal Server Error response.
 // It writes a JSON response with the appropriate status code and error details.
 // If an error occurs while encoding the response, it logs the error and panics.
 //
@@ -21,7 +21,7 @@ func InternalServerHandler(writer http.ResponseWriter, error error) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusInternalServerError)
 
-	response := responses.ErrorResponse{
+	response := response.ErrorResponse{
 		Code:   http.StatusInternalServerError,
 		Status: http.StatusText(http.StatusInternalServerError),
 		Errors: error,

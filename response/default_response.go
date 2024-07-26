@@ -1,4 +1,4 @@
-package responses
+package response
 
 type DefaultResponse struct {
 	Code   int         `json:"code"`

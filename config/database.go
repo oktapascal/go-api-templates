@@ -18,7 +18,7 @@ import (
 // Returns:
 // db *sql.DB: A pointer to the established database connection.
 // err error: An error that occurred during the connection establishment process. If no error occurred, it will be nil.
-func Connect() (*sql.DB, error) {
+func ConnectDatabase() (*sql.DB, error) {
 	db, err := sql.Open(viper.GetString("DB_DATABASE"), viper.GetString("DB_USERNAME")+":@tcp("+viper.GetString("DB_HOST")+":"+viper.GetString("DB_PORT")+")/"+viper.GetString("DB_NAME")+"?parseTime=True&loc=Asia%2FJakarta&charset=utf8&autocommit=false")
 
 	if err != nil {

@@ -4,8 +4,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/spf13/viper"
-	"go-rental/app/http/middlewares"
+	"go-rental/app/user"
+	"go-rental/app/welcome"
 	"go-rental/config"
+	"go-rental/middlewares"
 	"net/http"
 )
 
@@ -14,20 +16,28 @@ import (
 func main() {
 	config.InitConfig()
 
-	router := chi.NewRouter()
+	var db, err = config.ConnectDatabase()
+	if err != nil {
+		config.CreateLoggerFile().Fatal(err)
+	}
+
+	var validate = config.CreateValidator()
+
+	var router = chi.NewRouter()
 
 	router.Use(middlewares.LoggerMiddleware)
 	router.Use(middleware.Recoverer)
 
-	welcomeController := InitializeWelcomeController()
-	userController := InitializeUserController()
+	var welcomeHandler = welcome.Wire()
+	var userHandler = user.Wire(validate, db)
+
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
-	router.Get("/", welcomeController.Welcome)
-	router.Post("/user", userController.Store)
+	router.Get("/", welcomeHandler.Welcome())
+	router.Post("/user", userHandler.Store())
 
 	config.CreateLoggerConsole(nil).Info("Application Started")
-	err := http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
+	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
 		config.CreateLoggerFile().Fatal(err)
 	}

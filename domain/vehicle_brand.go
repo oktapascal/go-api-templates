@@ -1,11 +1,10 @@
-package models
+package domain
 
 import "time"
 
-type RentalDuration struct {
+type VehicleBrand struct {
 	Id        *int
-	Unit      string
-	Amount    int8
+	Name      string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 	DeleteAt  *time.Time

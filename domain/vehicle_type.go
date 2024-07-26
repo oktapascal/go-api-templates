@@ -1,8 +1,8 @@
-package models
+package domain
 
 import "time"
 
-type VehicleBrand struct {
+type VehicleType struct {
 	Id        *int
 	Name      string
 	CreatedAt *time.Time
