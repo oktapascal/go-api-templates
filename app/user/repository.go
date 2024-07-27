@@ -9,12 +9,12 @@ import (
 type Repository struct {
 }
 
-func (rpo Repository) Create(ctx context.Context, tx *sql.Tx, user domain.UserEntity) domain.UserEntity {
+func (rpo *Repository) Create(ctx context.Context, tx *sql.Tx, user *domain.User) *domain.User {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (rpo Repository) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (domain.UserEntity, error) {
+func (rpo *Repository) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (*domain.User, error) {
 	//TODO implement me
 	panic("implement me")
 }

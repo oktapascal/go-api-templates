@@ -16,7 +16,7 @@ type Handler struct {
 
 func (hdl *Handler) Store() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var user = domain.User{}
+		var user = new(domain.User)
 
 		var decoder = json.NewDecoder(request.Body)
 		var err = decoder.Decode(&user)
@@ -47,6 +47,8 @@ func (hdl *Handler) Store() http.HandlerFunc {
 
 			return
 		}
+
+		hdl.svc.Save(request.Context(), user)
 	}
 }
 

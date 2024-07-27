@@ -7,18 +7,6 @@ import (
 )
 
 type (
-	UserEntity struct {
-		IdNumber    string
-		Email       string
-		PhoneNumber string
-		Address     string
-		FirstName   string
-		LastName    string
-		Provider    string
-		ProviderId  int8
-		PhotoIdCard string
-	}
-
 	User struct {
 		IdNumber    string `validate:"required,min=1,max=16" json:"id_number"`
 		Email       string `validate:"required,email" json:"email"`
@@ -28,16 +16,17 @@ type (
 		LastName    string `validate:"required,min=1,max=50" json:"last_name"`
 		Provider    string `validate:"required" json:"provider"`
 		ProviderId  int8   `validate:"required" json:"provider_id"`
+		PhotoIdCard string `json:"photo_id_card"`
 	}
 
 	UserRepository interface {
-		Create(ctx context.Context, tx *sql.Tx, user UserEntity) UserEntity
-		FindByEmail(ctx context.Context, tx *sql.Tx, email string) (UserEntity, error)
+		Create(ctx context.Context, tx *sql.Tx, user *User) *User
+		FindByEmail(ctx context.Context, tx *sql.Tx, email string) (*User, error)
 	}
 
 	UserService interface {
-		Save(ctx context.Context, request User) User
-		GetByEmail(ctx context.Context, email string) User
+		Save(ctx context.Context, request *User) *User
+		GetByEmail(ctx context.Context, email string) *User
 	}
 
 	UserHandler interface {

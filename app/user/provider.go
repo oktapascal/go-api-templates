@@ -52,7 +52,7 @@ func ProvideService(rpo domain.UserRepository, db *sql.DB) *Service {
 
 func ProvideRepository() *Repository {
 	rpoOnce.Do(func() {
-		rpo = &Repository{}
+		rpo = new(Repository)
 	})
 
 	return rpo
