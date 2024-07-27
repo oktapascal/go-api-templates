@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/spf13/viper"
 	"go-rental/app/user"
 	"go-rental/app/welcome"
@@ -26,7 +25,7 @@ func main() {
 	var router = chi.NewRouter()
 
 	router.Use(middlewares.LoggerMiddleware)
-	router.Use(middleware.Recoverer)
+	router.Use(middlewares.RecoverMiddleware)
 
 	var welcomeHandler = welcome.Wire()
 	var userHandler = user.Wire(validate, db)

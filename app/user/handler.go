@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"go-rental/domain"
-	"go-rental/exceptions"
-	"go-rental/response"
 	"net/http"
 )
 
@@ -21,31 +19,12 @@ func (hdl *Handler) Store() http.HandlerFunc {
 		var decoder = json.NewDecoder(request.Body)
 		var err = decoder.Decode(&user)
 		if err != nil {
-			exceptions.InternalServerHandler(writer, err)
+			panic(err)
 		}
 
 		err = hdl.validate.Struct(user)
-
 		if err != nil {
-			var formatErrors = exceptions.BadRequestHandler(err)
-
-			writer.Header().Set("Content-Type", "application/json")
-			writer.WriteHeader(http.StatusBadRequest)
-
-			var responseError = response.ErrorResponse{
-				Code:   http.StatusBadRequest,
-				Status: http.StatusText(http.StatusBadRequest),
-				Errors: formatErrors,
-			}
-
-			encoder := json.NewEncoder(writer)
-
-			err = encoder.Encode(responseError)
-			if err != nil {
-				exceptions.InternalServerHandler(writer, err)
-			}
-
-			return
+			panic(err)
 		}
 
 		hdl.svc.Save(request.Context(), user)
