@@ -62,20 +62,33 @@ func FormatErrors(error error) []formatError {
 	return nil
 }
 
+// BadRequestHandler handles HTTP 400 Bad Request responses.
+// It writes a JSON response with the appropriate status code and error details.
+// If an error occurs while encoding the response, it calls the InternalServerHandler function.
+//
+// Parameters:
+// - writer: The http.ResponseWriter to write the response to.
+// - error: The error interface containing the details of the error.
 func BadRequestHandler(writer http.ResponseWriter, error any) {
+	// Set the content type of the response to JSON
 	writer.Header().Set("Content-Type", "application/json")
+
+	// Set the status code of the response to Bad Request
 	writer.WriteHeader(http.StatusBadRequest)
 
-	var responseError = response.ErrorResponse{
+	// Create an error response with the status code and error details
+	responseError := response.ErrorResponse{
 		Code:   http.StatusBadRequest,
 		Status: http.StatusText(http.StatusBadRequest),
 		Errors: error,
 	}
 
-	var encoder = json.NewEncoder(writer)
+	// Encode the error response into JSON
+	encoder := json.NewEncoder(writer)
 
-	var err = encoder.Encode(responseError)
-	if err != nil {
+	// Check if there was an error encoding the response
+	if err := encoder.Encode(responseError); err != nil {
+		// If there was an error, call the InternalServerHandler function
 		InternalServerHandler(writer, err)
 	}
 }
