@@ -82,6 +82,24 @@ func (hdl *Handler) StoreUserWithSSO() http.HandlerFunc {
 }
 
 func (hdl *Handler) GetByEmail() http.HandlerFunc {
-	//TODO implement me
-	panic("implement me")
+	return func(writer http.ResponseWriter, request *http.Request) {
+		email := request.URL.Query().Get("email")
+
+		ctx := request.Context()
+		user := hdl.svc.GetByEmail(ctx, email)
+		svcResponse := response.DefaultResponse{
+			Code:   http.StatusOK,
+			Status: http.StatusText(http.StatusOK),
+			Data:   user,
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+
+		encoder := json.NewEncoder(writer)
+
+		err := encoder.Encode(svcResponse)
+		if err != nil {
+			panic(err)
+		}
+	}
 }

@@ -39,6 +39,7 @@ func main() {
 	router.MethodNotAllowed(welcomeHandler.MethodNotAllowedApi())
 
 	router.Route("/user", func(route chi.Router) {
+		router.Get("/email", userHandler.GetByEmail())
 		route.Post("/", userHandler.StoreUserWithoutSSO())
 		route.Post("/sso", userHandler.StoreUserWithSSO())
 	})
