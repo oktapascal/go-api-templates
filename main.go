@@ -15,29 +15,31 @@ import (
 func main() {
 	config.InitConfig()
 
-	var db, err = config.ConnectDatabase()
+	log := config.CreateLoggers(nil)
+
+	db, err := config.ConnectDatabase()
 	if err != nil {
-		config.CreateLoggerFile().Fatal(err)
+		log.Fatal(err)
 	}
 
-	var validate = config.CreateValidator()
+	validate := config.CreateValidator()
 
-	var router = chi.NewRouter()
+	router := chi.NewRouter()
 
 	router.Use(middlewares.LoggerMiddleware)
 	router.Use(middlewares.RecoverMiddleware)
 
-	var welcomeHandler = welcome.Wire()
-	var userHandler = user.Wire(validate, db)
+	welcomeHandler := welcome.Wire()
+	userHandler := user.Wire(validate, db)
 
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", welcomeHandler.Welcome())
 	router.Post("/user", userHandler.Store())
 
-	config.CreateLoggerConsole(nil).Info("Application Started")
+	log.Info("Application Started")
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)
 	if err != nil {
-		config.CreateLoggerFile().Fatal(err)
+		log.Fatal(err)
 	}
 }
