@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"go-rental/domain"
+	"go-rental/exceptions"
 	"go-rental/utils"
 )
 
@@ -82,7 +83,7 @@ func (svc *Service) GetByEmail(ctx context.Context, email string) *domain.UserRe
 
 	user, errFind := svc.rpo.FindByEmail(ctx, tx, email)
 	if errFind != nil {
-		panic(errFind)
+		panic(exceptions.NewNotFoundError(errFind.Error()))
 	}
 
 	return &domain.UserResponse{
