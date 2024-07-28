@@ -35,6 +35,8 @@ func (svc *Service) SaveUserWithoutSSO(ctx context.Context, request *domain.Regi
 		user.Password = &hash
 	}
 
+	user = svc.rpo.Create(ctx, tx, user)
+
 	return &domain.UserResponse{
 		Email:     user.Email,
 		FirstName: user.FirstName,
@@ -61,6 +63,8 @@ func (svc *Service) SaveUserWithSSO(ctx context.Context, request *domain.Registe
 		ProviderId:  &request.ProviderId,
 	}
 
+	user = svc.rpo.Create(ctx, tx, user)
+
 	return &domain.UserResponse{
 		Email:     user.Email,
 		FirstName: user.FirstName,
@@ -69,13 +73,21 @@ func (svc *Service) SaveUserWithSSO(ctx context.Context, request *domain.Registe
 }
 
 func (svc *Service) GetByEmail(ctx context.Context, email string) *domain.UserResponse {
-	//TODO implement me
-	panic("implement me")
-}
+	tx, err := svc.db.Begin()
+	if err != nil {
+		panic(err)
+	}
 
-func NewService(rpo domain.UserRepository, db *sql.DB) *Service {
-	return &Service{
-		rpo: rpo,
-		db:  db,
+	defer utils.CommitRollback(tx)
+
+	user, errFind := svc.rpo.FindByEmail(ctx, tx, email)
+	if errFind != nil {
+		panic(errFind)
+	}
+
+	return &domain.UserResponse{
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
 }
