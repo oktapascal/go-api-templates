@@ -44,7 +44,7 @@ type (
 		FirstName   string `validate:"required,min=1,max=50" json:"first_name"`
 		LastName    string `validate:"required,min=1,max=50" json:"last_name"`
 		Provider    string `validate:"required" json:"provider"`
-		ProviderId  string `validate:"required" json:"provider_id"`
+		ProviderId  int8   `validate:"required" json:"provider_id"`
 	}
 
 	UserRepository interface {

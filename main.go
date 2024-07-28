@@ -35,7 +35,13 @@ func main() {
 	//router.Use(middlewares.AuthorizationCheckMiddleware)
 	//router.Use(middlewares.VerifyTokenMiddleware)
 	router.Get("/", welcomeHandler.Welcome())
-	router.Post("/user", userHandler.Store())
+	router.NotFound(welcomeHandler.NotFoundApi())
+	router.MethodNotAllowed(welcomeHandler.MethodNotAllowedApi())
+
+	router.Route("/user", func(route chi.Router) {
+		route.Post("/", userHandler.StoreUserWithoutSSO())
+		route.Post("/sso", userHandler.StoreUserWithSSO())
+	})
 
 	log.Info("Application Started")
 	err = http.ListenAndServe(":"+viper.GetString("APP_PORT"), router)

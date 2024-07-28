@@ -15,7 +15,31 @@ type Handler struct {
 // It does not return anything.
 func (hdl *Handler) Welcome() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusOK)
+
 		_, err := writer.Write([]byte("Hello From " + viper.GetString("APP_NAME")))
+		if err != nil {
+			exceptions.InternalServerHandler(writer, err)
+		}
+	}
+}
+
+func (hdl *Handler) NotFoundApi() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusNotFound)
+
+		_, err := writer.Write([]byte("Route Doesn't Exist"))
+		if err != nil {
+			exceptions.InternalServerHandler(writer, err)
+		}
+	}
+}
+
+func (hdl *Handler) MethodNotAllowedApi() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusMethodNotAllowed)
+
+		_, err := writer.Write([]byte("Method Is Not Allowed"))
 		if err != nil {
 			exceptions.InternalServerHandler(writer, err)
 		}

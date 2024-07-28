@@ -17,6 +17,7 @@ func (svc *Service) SaveUserWithoutSSO(ctx context.Context, request *domain.Regi
 	if err != nil {
 		panic(err)
 	}
+
 	defer utils.CommitRollback(tx)
 
 	user := &domain.User{
@@ -28,17 +29,53 @@ func (svc *Service) SaveUserWithoutSSO(ctx context.Context, request *domain.Regi
 		FirstName:   request.FirstName,
 		LastName:    request.LastName,
 	}
-	user.Password = utils.Hash(user.Password)
-	//TODO implement me
-	panic("implement me")
+
+	hash, errHash := utils.Hash(*user.Password)
+	if errHash != nil {
+		user.Password = &hash
+	}
+
+	return &domain.UserResponse{
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
 }
 
 func (svc *Service) SaveUserWithSSO(ctx context.Context, request *domain.RegisterWithSSORequest) *domain.UserResponse {
-	//TODO implement me
-	panic("implement me")
+	tx, err := svc.db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	defer utils.CommitRollback(tx)
+
+	user := &domain.User{
+		IdNumber:    request.IdNumber,
+		Email:       request.Email,
+		PhoneNumber: request.PhoneNumber,
+		Address:     request.Address,
+		FirstName:   request.FirstName,
+		LastName:    request.LastName,
+		Provider:    &request.Provider,
+		ProviderId:  &request.ProviderId,
+	}
+
+	return &domain.UserResponse{
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
 }
 
 func (svc *Service) GetByEmail(ctx context.Context, email string) *domain.UserResponse {
 	//TODO implement me
 	panic("implement me")
+}
+
+func NewService(rpo domain.UserRepository, db *sql.DB) *Service {
+	return &Service{
+		rpo: rpo,
+		db:  db,
+	}
 }
