@@ -24,14 +24,22 @@ import (
 // Returns:
 // - A http.Handler that recovers from panics and logs the error.
 func RecoverMiddleware(next http.Handler) http.Handler {
+	// Return a new http.Handler that wraps the provided handler
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		// Recover from panics
 		defer func() {
+			// Check if a panic occurred
 			if err := recover(); err != nil {
 				// Check if the error is a NotFoundError
 				if str, ok := err.(exceptions.NotFoundError); ok {
 					// Call NotFoundHandler to send error response
 					exceptions.NotFoundHandler(writer, str)
+					return
+				}
+
+				// Check if the error is a DuplicateError
+				if str, ok := err.(exceptions.DuplicateError); ok {
+					exceptions.DuplicateHandler(writer, str)
 					return
 				}
 

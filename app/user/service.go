@@ -36,6 +36,11 @@ func (svc *Service) SaveUserWithoutSSO(ctx context.Context, request *domain.Regi
 		user.Password = &hash
 	}
 
+	_, err = svc.rpo.FindByEmail(ctx, tx, user.Email)
+	if err == nil {
+		panic(exceptions.NewDuplicateError("email already exists"))
+	}
+
 	user = svc.rpo.Create(ctx, tx, user)
 
 	return &domain.UserResponse{
@@ -62,6 +67,11 @@ func (svc *Service) SaveUserWithSSO(ctx context.Context, request *domain.Registe
 		LastName:    request.LastName,
 		Provider:    &request.Provider,
 		ProviderId:  &request.ProviderId,
+	}
+
+	_, err = svc.rpo.FindByEmail(ctx, tx, user.Email)
+	if err == nil {
+		panic(exceptions.NewDuplicateError("email already exists"))
 	}
 
 	user = svc.rpo.Create(ctx, tx, user)
